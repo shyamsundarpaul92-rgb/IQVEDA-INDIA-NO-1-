@@ -1,4 +1,4 @@
-name: Build Android APK
+  name: Build Android APK
 
 on:
   push:
@@ -17,13 +17,17 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install dependencies
+    - name: Install system dependencies
       run: |
         sudo apt update
-        sudo apt install -y git zip unzip openjdk-17-jdk autoconf automake libtool pkg-config libltdl-dev
-        pip install --upgrade Cython==0.29.36 buildozer virtualenv
+        sudo apt install -y git zip unzip openjdk-17-jdk autoconf automake libtool pkg-config libltdl-dev ccache libffi-dev libssl-dev
+        pip install --upgrade pip
+        pip install Cython==0.29.36 buildozer virtualenv
 
     - name: Build with Buildozer
+      env:
+        CFLAGS: "-Wno-error -Wno-incompatible-pointer-types -Wno-deprecated-declarations"
+        CXXFLAGS: "-Wno-error -Wno-incompatible-pointer-types -Wno-deprecated-declarations"
       run: |
         yes | buildozer -v android debug
 
